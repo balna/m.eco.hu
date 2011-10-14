@@ -1,4 +1,9 @@
 configuration
+
+stdlib /Users/balint/git/mobl-lib
+
 style $baseColor = rgb(112, 153, 226)
+
 debug
+
 title "meco"
