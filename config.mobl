@@ -1,6 +1,5 @@
 configuration
-
-stdlib /Users/balint/git/mobl-lib
+stdlib /gitt/moblib
 
 style $baseColor = rgb(112, 153, 226)
 
