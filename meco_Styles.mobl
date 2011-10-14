@@ -1,0 +1,128 @@
+module meco_Styles
+
+style FloatBalra_ticker_Z {
+font-size: 18px;
+float: left;
+margin-left: 0px;
+color: green;
+font-weight: bold;
+}
+
+style FloatBalra_ticker_P {
+font-size: 18px;
+float: left;
+margin-left: 0px;
+color: red;
+font-weight: bold;
+}
+
+style FloatJobbra_ar_Z {
+font-size: 20px;
+float: right;
+margin-right: 5px;
+color: green;
+font-weight: bold;
+}
+
+style FloatJobbra_ar_P {
+font-size: 20px;
+float: right;
+margin-right: 5px;
+color: red;
+font-weight: bold;
+}
+
+style FloatJobbra_valt_Z {
+font-size: 20px;
+float: right;
+margin-right: 90px;
+color: black;
+position: absolute;
+right: 0px;
+font-weight: bold;
+}
+
+style FloatJobbra_valt_P {
+font-size: 20px;
+float: right;
+margin-right: 90px;
+color: black;
+position: absolute;
+right: 0px;
+font-weight: bold;
+}
+
+
+style List_Item_Style_0 {
+  background-color: #fff;
+  border: 0px solid #cccccc;
+  border-left: 0;
+  border-right: 0;
+  color: #000; 
+  display: block;
+  font-size: 17px;
+  margin-bottom: -1px;
+  padding: 12px 10px;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  text-overflow: ellipsis;
+}
+
+style List_Item_Style_1 {
+  background-color: #F2F2E9; 
+  border: 0px solid #cccccc;
+  border-left: 0;
+  border-right: 0;
+  color: #000;  
+  display: block;
+  font-size: 17px;
+  margin-bottom: -1px;
+  padding: 12px 10px;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  text-overflow: ellipsis;
+}
+
+style logo_Style {
+margin-top: 6px;
+text-align: center;
+}
+
+style graf_Style {
+width: 100%;
+min-height: 100px;
+text-align: center;
+background: url("data:image/gif;base64,R0lGODlhCgAKAJEDAMzMzP9mZv8AAP///yH/C05FVFNDQVBFMi4wAwEAAAAh+QQFAAADACwAAAAACgAKAAACF5wncgaAGgJzJ647cWua4sOBFEd62VEAACH5BAUAAAMALAEAAAAIAAMAAAIKnBM2IoMDAFMQFAAh+QQFAAADACwAAAAABgAGAAACDJwHMBGofKIRItJYAAAh+QQFAAADACwAAAEAAwAIAAACChxgOBPBvpYQYxYAIfkEBQAAAwAsAAAEAAYABgAAAgoEhmPJHOGgEGwWACH5BAUAAAMALAEABwAIAAMAAAIKBIYjYhOhRHqpAAAh+QQFAAADACwEAAQABgAGAAACDJwncqi7EQYAA0p6CgAh+QQJAAADACwHAAEAAwAIAAACCpRmoxoxvQAYchQAOw==") center center no-repeat;
+}
+
+style ER_Header_Style {
+font-size: 20px;
+float: left;
+}
+
+style ER_Item_Style {
+font-size: 20px;
+font-weight: bold;
+float: right;
+}
+
+style Fooldal_Item_Style {
+background-color: white;
+border: 1px solid #CCC;
+border-left: 0;
+border-right: 0;
+color: black;
+display: block;
+font-size: 20px;
+font-weight: bold;
+margin-bottom: -1px;
+padding: 12px 10px;
+text-decoration: none;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}

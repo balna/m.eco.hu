@@ -1,0 +1,192 @@
+module meco_Res
+
+
+type ecod {
+		ido: String
+		stockid: Num
+		ticker: String
+		utolso: String
+		min: String
+		max: String
+		nyito: String
+		elozozaro: String
+		utolsomenny: String
+		napiosszes: String
+		veteliaj: String
+		eladasiaj: String
+		atlagar: String
+		valtozas: String
+		valtszaz: String
+		vetelidbszam: String
+		eladasidbszam: String
+}	
+
+entity RVd {
+		fave: Bool
+		ido: String
+		stockid: Num
+		ticker: String
+		utolso: String
+		min: String
+		max: String
+		nyito: String
+		elozozaro: String
+		utolsomenny: String
+		napiosszes: String
+		veteliaj: String
+		eladasiaj: String
+		atlagar: String
+		valtozas: String
+		valtszaz: String
+		vetelidbszam: String
+		eladasidbszam: String
+}
+
+entity Beall  {
+	rrate: Num
+	csaktiv: Bool
+}
+
+entity Tickerek  {
+	tickerid: Num
+	ticker: String
+	fav: Bool
+}
+
+function favorite(t: String): Bool {
+	var f = Tickerek.findBy("ticker", t);
+	if ( f != null ) {
+		if (f.fav) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		alert("Idáig nem lett volna szabad eljutni :-()");
+		return false;
+	}	
+}
+
+function ReszvenyMapper(json:JSON) : [ecod] {
+	return json.bet.reszveny;
+}
+
+service ecohu {
+  resource rv() : [ecod] {
+    uri = "http://services.eco.hu/bb/bb_bet_rvprompt.php"	
+ // uri = "http://services.eco.hu/bb/m/staticjson.json"
+    encoding = "json"
+	mapper = ReszvenyMapper
+  }
+}
+
+function init(){
+//	alert(Beall.all().count());
+	if(Beall.all().count() == 0){
+		var beallitas = Beall();
+		beallitas.rrate = 10;
+		beallitas.csaktiv = true;
+		add(beallitas);
+	}	
+}
+
+function szokozol(a: String): String {
+var szam = "majom";
+szam = a.toString();
+var i = szam.length;
+var j = 1;
+var szam2 = szam.split("",100);
+szam = "";
+
+foreach(kar in szam2)   {
+	kar = szam2.get(i-1);
+	
+	if(!Math.isNaN(parseNum(kar))) { 
+		if(j !=4) {
+			szam = szam2.get(i-1) + szam;
+			i = i-1;
+			j = j +1;
+		}
+		else {
+			szam = " " + szam;
+			szam = szam2.get(i-1) + szam;
+			i = i-1;
+			j = 1;
+		}
+	}
+	else {
+		szam = szam2.get(i-1) + szam;
+		i = i-1;
+		j =1;
+	}		
+}
+
+return szam;
+}	
+
+function tolt(aktiv: Bool) {
+	var adatok=ecohu.rv();
+	RVd.all().destroyAll();
+	var sor=RVd(ticker="alma");
+	var date = now();
+	foreach(papir in adatok) {	
+//		sor.tstamp=date;
+		sor.ido=papir.ido;
+		sor.stockid=papir.stockid;
+		sor.ticker=papir.ticker;
+		sor.utolso=szokozol(papir.utolso);
+		sor.min=szokozol(papir.min);
+		sor.max=szokozol(papir.max);
+		sor.nyito=szokozol(papir.nyito);
+		sor.elozozaro=szokozol(papir.elozozaro);
+		sor.utolsomenny=szokozol(papir.utolsomenny);
+		sor.napiosszes=szokozol(papir.napiosszes);
+		sor.veteliaj=szokozol(papir.veteliaj);
+		sor.eladasiaj=szokozol(papir.eladasiaj);
+		sor.atlagar=szokozol(papir.atlagar);
+		sor.valtozas=szokozol(papir.valtozas);
+		sor.valtszaz=szokozol(papir.valtszaz);
+		sor.vetelidbszam=szokozol(papir.vetelidbszam);
+		sor.eladasidbszam=szokozol(papir.eladasidbszam);
+		sor.fave=favorite(papir.ticker);
+		if(!aktiv){	
+			add(sor);
+		}
+		else {
+			if(papir.ido!="00:00:00") {
+				add(sor);
+			} 
+		}		
+		sor=RVd(ticker ="korte");
+	}	
+}
+
+function tickertolt() {
+	var adatok=ecohu.rv();
+//	Tickerek.all().destroyAll();
+	var sor = Tickerek(tickerid=0);
+	foreach(papir in adatok) {
+		if( Tickerek.findBy("ticker", papir.ticker) == null) {
+			sor.tickerid = papir.stockid;
+			sor.ticker = papir.ticker;
+			add(sor);
+			sor = Tickerek(tickerid=0);
+		}	
+	}
+}
+
+//tolt(true);
+tickertolt();
+init();
+tolt(Beall.all().one().csaktiv);
+
+
+
+
+
+
+//repeat(Beallitasok.all().one().rrate*1000, {
+//	alert(Beallitasok.all().one().rrate);
+//});
