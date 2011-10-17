@@ -14,23 +14,38 @@ screen root() {
 		block(logo_Style) {
 			image("logo.gif")
 		}
-		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().order("ticker", true), "Részvények"); }) { "Részvény árfolyamok" }
-		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().filter("fave", "=", true).order("ticker", true), "Kedvenceim"); }) { "Kedvenceim árfolyamai" }
+		item(Fooldal_Item_Style, onclick={ RV_lista( "Részvények"); }) { "Részvény árfolyamok" }
+//		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().filter("fave", "=", true).order("ticker", true), "Kedvenceim"); }) { "Kedvenceim árfolyamai" }
 		item(Fooldal_Item_Style, onclick={ Beallit(); }) { "Beállítások" }
 	//}
 	
 }
 
 
-screen RV_lista(adatok: RVd, honnan: String) {
+function favfilter(p: ecod): Bool {
+//	var b = Tickerek(tickerid=0);
+	log("ticker:");
+	log(p.ticker);
+	log("majom:");
+//	alert(Tickerek.findBy("ticker", papir.ticker).fav);
+	return p.ticker=="ESTMEDIA";
+	if (Tickerek.findBy("ticker", p.ticker).fav==true) {
+		return true; }
+//	return Tickerek.findBy("ticker", papir.ticker).fav ;
+	}
+
+screen RV_lista( honnan: String) {
 	var i = false
 	var j = 0
 	header(honnan) {
     	backButton()
     }
+    var adatok = ecohu.rv()
     
-	list(a in adatok ) {
-    	 script { j = j + 1;}
+  //  whenLoaded(adatok) {
+	list(a in adatok.filter(favfilter) ) {
+		//script {log("jonnek az adatok"); log(adatok);}
+    	// script { j = j + 1; log("sör");log(a);}
     		item(csikoz(), onclick={ Egyreszveny(a);}) { 
     			label(a.ticker,szinez_ticker(a.valtozas))
     			label(a.utolso, szinez_ar(a.valtozas))
@@ -38,8 +53,8 @@ screen RV_lista(adatok: RVd, honnan: String) {
     			image(chartbase + a.stockid + "_t.png", valign="middle")
       		}
 		
+	//}
 	}
-	
 	when (j==0)  {label("hmmm vagy nem állítottál be kedvenceket a beállításokban vagy hengerfejes lett az motor, refresh?") label(j)}
 }			
 

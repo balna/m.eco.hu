@@ -126,11 +126,10 @@ foreach(kar in szam2)   {
 return szam;
 }	
 
-function tolt(aktiv: Bool) {
-	var adatok=ecohu.rv();
+function tolt(adatok: [ecod], aktiv: Bool): RVd {
 	RVd.all().destroyAll();
 	var sor=RVd(ticker="alma");
-	var date = now();
+//	var date = now();
 	foreach(papir in adatok) {	
 //		sor.tstamp=date;
 		sor.ido=papir.ido;
@@ -160,7 +159,8 @@ function tolt(aktiv: Bool) {
 			} 
 		}		
 		sor=RVd(ticker ="korte");
-	}	
+	}
+	return RVd();	
 }
 
 function tickertolt() {
@@ -180,7 +180,7 @@ function tickertolt() {
 //tolt(true);
 tickertolt();
 init();
-tolt(Beall.all().one().csaktiv);
+//tolt(Beall.all().one().csaktiv);
 
 
 
