@@ -1,5 +1,5 @@
 application meco
-
+ 
 import mobl::ui::generic
 import meco_Res
 import meco_Styles
@@ -7,7 +7,6 @@ import meco_Styles
 
 var paros = true;
 var chartbase = "http://charts.eco.hu/tozsde/";
-
 
 
 screen root() {

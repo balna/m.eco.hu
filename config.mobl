@@ -1,8 +1,8 @@
 configuration
-stdlib /gitt/moblib
+// stdlib /gitt/moblib
 
 style $baseColor = rgb(112, 153, 226)
-
+ 
 debug
 
 title "meco"
