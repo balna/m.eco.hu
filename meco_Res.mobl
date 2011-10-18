@@ -21,6 +21,8 @@ type ecod {
 		eladasidbszam: String
 }	
 
+
+
 entity RVd {
 		fave: Bool
 		ido: String
@@ -45,6 +47,7 @@ entity RVd {
 entity Beall  {
 	rrate: Num
 	csaktiv: Bool
+	gen_ido: String
 }
 
 entity Tickerek  {
@@ -70,8 +73,23 @@ function favorite(t: String): Bool {
 }
 
 function ReszvenyMapper(json:JSON) : [ecod] {
+
+	if(Beall.all().count() == 0){
+		var beallitas = Beall();
+		beallitas.rrate = 10;
+		beallitas.csaktiv = true;
+		beallitas.gen_ido = json.bet.gen_ido.toString();
+		add(beallitas);
+	}
+	else {
+		var id = Beall.all().one().id;
+		var t = Beall.load(id);
+//		log (t);
+		t.gen_ido=json.bet.gen_ido.toString();
+	}	
 	return json.bet.reszveny;
 }
+
 
 service ecohu {
   resource rv() : [ecod] {
@@ -82,7 +100,7 @@ service ecohu {
   }
 }
 
-function init(){
+function Beall_init(){
 //	alert(Beall.all().count());
 	if(Beall.all().count() == 0){
 		var beallitas = Beall();
@@ -126,12 +144,23 @@ foreach(kar in szam2)   {
 return szam;
 }	
 
-function tolt(aktiv: Bool) {
+function tolt(): String {
 	var adatok=ecohu.rv();
+
+	
 	RVd.all().destroyAll();
 	var sor=RVd(ticker="alma");
-	var date = now();
+	var tickersor = Tickerek(tickerid=0);
+	var aktiv = Beall.all().one().csaktiv;
+//	var date = now();
 	foreach(papir in adatok) {	
+		if( Tickerek.findBy("ticker", papir.ticker) == null) {
+			tickersor.tickerid = papir.stockid;
+			tickersor.ticker = papir.ticker;
+			tickersor.fav = false;
+			add(tickersor);
+			tickersor = Tickerek(tickerid=0);
+		}	
 //		sor.tstamp=date;
 		sor.ido=papir.ido;
 		sor.stockid=papir.stockid;
@@ -160,7 +189,8 @@ function tolt(aktiv: Bool) {
 			} 
 		}		
 		sor=RVd(ticker ="korte");
-	}	
+	}
+	return Beall.all().one().gen_ido	;
 }
 
 function tickertolt() {
@@ -178,9 +208,15 @@ function tickertolt() {
 }
 
 //tolt(true);
-tickertolt();
-init();
-tolt(Beall.all().one().csaktiv);
+
+
+
+
+
+//tickertolt();
+//sleep(1000);
+//Beall_init();
+//tolt();
 
 
 
