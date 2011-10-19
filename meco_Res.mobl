@@ -80,8 +80,8 @@ function ReszvenyMapper(json:JSON) : [ecod] {
 
 service ecohu {
   resource rv() : [ecod] {
-    uri = "http://services.eco.hu/bb/bb_bet_rvprompt.php"	
- // uri = "http://services.eco.hu/bb/m/staticjson.json"
+//	uri = "http://services.eco.hu/bb/bb_bet_rvprompt.php"	
+  uri = "http://services.eco.hu/bb/meco/staticjson.json"
     encoding = "json"
 	mapper = ReszvenyMapper
   }
@@ -165,7 +165,7 @@ function tol(p: ecod, paros: Bool) {
 		
 }
 
-function tolt(csakfav: Bool, csakakt: Bool) {
+function tolt(csakfav: Bool, csakakt: Bool): String {
 	var adatok = ecohu.rv();
 	var paros = false;
 	RVd.all().destroyAll();
@@ -174,15 +174,18 @@ function tolt(csakfav: Bool, csakakt: Bool) {
 	
 	
 	 foreach(papir in adatok) {	
-// ha nem volt benne a ticker táblában, akkor berakjuk 	
-		if( Tickerek.findBy("ticker", papir.ticker) == null) {
+// ha nem volt benne a ticker táblában, akkor berakjuk
+		var t = Tickerek.findBy("ticker", papir.ticker); 	
+		if( t == null) {
 			tickersor.tickerid = papir.stockid;
 			tickersor.ticker = papir.ticker;
 			tickersor.fav = false;
 			tickersor.akt = (papir.ido!="00:00:00");
 			add(tickersor);
 			tickersor = Tickerek(tickerid=0);
-		}	
+		}
+		else { t.akt = (papir.ido!="00:00:00");
+		}		
 //ha kell, betoljuk a db a részvény adatokat		
 		var f = isfav(papir.ticker);
 		var a = isakt(papir.ticker);
@@ -196,9 +199,11 @@ function tolt(csakfav: Bool, csakakt: Bool) {
 		if((!a) && (!csakakt) && f && (!csakfav)) {tol(papir, paros); paros=!paros; }
 		if((!a) && (!csakakt) && (!f) && (!csakfav)) {tol(papir, paros); paros=!paros; }
 	}
+	return Beall.all().one().gen_ido;
 }
 
-Beall_init();
+
+
 
 
 
