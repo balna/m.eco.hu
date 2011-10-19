@@ -4,47 +4,78 @@ import mobl::ui::generic
 import meco_Res
 import meco_Styles
  
-
 var paros = true;
 var chartbase = "http://charts.eco.hu/tozsde/";
 
-
 screen root() {
+		var a= true
+		var f= true
 	//block() {
 		block(logo_Style) {
 			image("logo.gif")
 		}
 		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().order("ticker", true), "Részvények"); }) { "Részvény árfolyamok" }
-		item(Fooldal_Item_Style, onclick={ RV_lista1(true, "Majom"); }) { "Majmok" }
+		item(Fooldal_Item_Style, onclick={ Reszvenylista("M", false, true ); }) { "Majmok" }
 		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().filter("fave", "=", true).order("ticker", true), "Kedvenceim"); }) { "Kedvenceim árfolyamai" }
 		item(Fooldal_Item_Style, onclick={ Beallit(); }) { "Beállítások" }
+		checkBox(a, label="csaktiv")
+		checkBox(f, label="csakfav")
+		button("tolt1", onclick={tolt(f, a);})
 	//}
 	
 }
+
+screen Reszvenylista(mit: String, csakfav: Bool, csakakt: Bool) {
+	var adatok = RVd.all()
+	
+	header(mit) {
+		backButton()
+		button("Frissít", onclick={tolt(csakakt, csakfav);})
+	}
+	block()	{
+		list(a in adatok ) {
+			when(a.paros==0) {
+    			item(List_Item_Style_0, onclick={ Egyreszveny(a);}) { 
+    				label(a.ticker,szinez_ticker(a.valtozas))
+    				label(a.utolso, szinez_ar(a.valtozas))
+    				label(a.valtozas, szinez_valt(a.valtozas))
+    				image(chartbase + a.stockid + "_t.png", valign="middle")
+      			}
+      		}
+      		when(a.paros==1) {
+    			item(List_Item_Style_1, onclick={ Egyreszveny(a);}) { 
+    				label(a.ticker,szinez_ticker(a.valtozas))
+    				label(a.utolso, szinez_ar(a.valtozas))
+    				label(a.valtozas, szinez_valt(a.valtozas))
+    				image(chartbase + a.stockid + "_t.png", valign="middle")
+      			}
+      		}
+		}
+	}
+}
+
 screen RV_lista1(mindet: Bool, honnan: String) {
 	var i = false
 	var j = 0
 	var adatok = RVd.all()
 	
-	group() {
+	header("") {
 		item (){ 
     	backButton()
-    	sideButton(tolt(), onclick={tolt();})
+    	button("tolt1", onclick={tolt(false, false);})
     	}
     }
     group() {
  //   when (j==0) {tolt(Beall.all().one().csaktiv)}
 	list(a in adatok ) {
-    	 script { j = j + 1;}
-    		when(mindet || a.fave) {  item(csikoz(), onclick={ Egyreszveny(a);}) { 
-    			label(a.ticker,szinez_ticker(a.valtozas))
-    			label(a.utolso, szinez_ar(a.valtozas))
-    			label(a.valtozas, szinez_valt(a.valtozas))
-    			image(chartbase + a.stockid + "_t.png", valign="middle")
-      			}
-			}
+    	script { j = j + 1;}
+    	item(csikoz(a.paros), onclick={ Egyreszveny(a);}) { 
+    		label(a.ticker,szinez_ticker(a.valtozas))
+    		label(a.utolso, szinez_ar(a.valtozas))
+    		label(a.valtozas, szinez_valt(a.valtozas))
+    		image(chartbase + a.stockid + "_t.png", valign="middle")
+      	}
 	}
-	
 	when (j==0)  {label("hmmm vagy nem állítottál be kedvenceket a beállításokban vagy hengerfejes lett az motor, refresh?") label(j)}
 	}
 }
@@ -52,10 +83,10 @@ screen RV_lista1(mindet: Bool, honnan: String) {
 screen RV_lista(adatok: RVd, honnan: String) {
 	var i = false
 	var j = 0
-	group() {
+	header(honnan) {
 		//label(Beall.all().one().gen_ido)
     	backButton()
-    	sideButton(tolt(), onclick={ tolt();})
+//    	sideButton(tolt(), onclick={ tolt();  })
     }
     group() {
  //   when (j==0) {tolt(Beall.all().one().csaktiv)}
@@ -111,7 +142,7 @@ screen Egyreszveny(a: RVd) {
     }
     item(List_Item_Style_0) {
     	label("Forgalom (M):", ER_Header_Style)
-    	label( Math.round(parseNum(a.atlagar)*parseNum(a.napiosszes)/1000000), ER_Item_Style)
+ //   	label( Math.round(parseNum(a.atlagar)*parseNum(a.napiosszes)/1000000), ER_Item_Style)
     }
     item(List_Item_Style_1) {
     	var s = a.veteliaj.toString() + " x " + a.vetelidbszam.toString()
@@ -136,7 +167,7 @@ header("Kedvencnek") {
     	backButton()
     }
     list(a in Tickerek.all().order("fav", false).order("ticker", true)){
-    	item(csikoz()) {
+    	item(csikoz("0")) {
     		checkBox(a.fav, label=a.ticker)
     	}
     } 
@@ -166,17 +197,9 @@ screen Beallit() {
 }
 
 
-function csikoz():Style {
-//	var s : Style = My_itemStyle_0 ;
-	if(paros) {
-		paros = !paros;
-		return List_Item_Style_0;
-		
-	}
-	else {
-		paros = !paros;
-		return List_Item_Style_1;
-	}	
+function csikoz(p: String):Style {
+	if(p==0) {return List_Item_Style_0;}
+	else {return List_Item_Style_1;}	
 }
 
 

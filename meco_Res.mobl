@@ -12,6 +12,7 @@ type ecod {
 		elozozaro: String
 		utolsomenny: String
 		napiosszes: String
+		forgalom: String
 		veteliaj: String
 		eladasiaj: String
 		atlagar: String
@@ -24,8 +25,8 @@ type ecod {
 
 
 entity RVd {
-		fave: Bool
 		ido: String
+		paros: String
 		stockid: Num
 		ticker: String
 		utolso: String
@@ -35,9 +36,10 @@ entity RVd {
 		elozozaro: String
 		utolsomenny: String
 		napiosszes: String
+		forgalom: String
 		veteliaj: String
 		eladasiaj: String
-		atlagar: String
+//		atlagar: String
 		valtozas: String
 		valtszaz: String
 		vetelidbszam: String
@@ -54,22 +56,7 @@ entity Tickerek  {
 	tickerid: Num
 	ticker: String
 	fav: Bool
-}
-
-function favorite(t: String): Bool {
-	var f = Tickerek.findBy("ticker", t);
-	if ( f != null ) {
-		if (f.fav) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	else {
-		alert("Idáig nem lett volna szabad eljutni :-()");
-		return false;
-	}	
+	akt: Bool
 }
 
 function ReszvenyMapper(json:JSON) : [ecod] {
@@ -106,6 +93,7 @@ function Beall_init(){
 		var beallitas = Beall();
 		beallitas.rrate = 10;
 		beallitas.csaktiv = true;
+		beallitas.gen_ido= "00:00:00";
 		add(beallitas);
 	}	
 }
@@ -123,19 +111,19 @@ foreach(kar in szam2)   {
 	
 	if(!Math.isNaN(parseNum(kar))) { 
 		if(j !=4) {
-			szam = szam2.get(i-1) + szam;
+			szam = kar + szam;
 			i = i-1;
 			j = j +1;
 		}
 		else {
 			szam = " " + szam;
-			szam = szam2.get(i-1) + szam;
+			szam = kar + szam;
 			i = i-1;
-			j = 1;
+			j = 2;
 		}
 	}
 	else {
-		szam = szam2.get(i-1) + szam;
+		szam = kar + szam;
 		i = i-1;
 		j =1;
 	}		
@@ -143,73 +131,74 @@ foreach(kar in szam2)   {
 
 return szam;
 }	
+function isfav(t: String): Bool {
+	return Tickerek.findBy("ticker", t).fav;
+}
 
-function tolt(): String {
-	var adatok=ecohu.rv();
+function isakt(t: String): Bool {
+	return Tickerek.findBy("ticker", t).akt;
+}
 
-	
+function tol(p: ecod, paros: Bool) {
+		var sor=RVd(ticker="alma");
+		sor.ido=p.ido;
+		sor.stockid=p.stockid;
+		sor.ticker=p.ticker;
+		sor.utolso=szokozol(p.utolso);
+		sor.min=szokozol(p.min);
+		sor.max=szokozol(p.max);
+		sor.nyito=szokozol(p.nyito);
+		sor.elozozaro=szokozol(p.elozozaro);
+		sor.utolsomenny=szokozol(p.utolsomenny);
+		sor.napiosszes=szokozol(p.napiosszes);
+		sor.forgalom=szokozol(p.forgalom);
+		sor.veteliaj=szokozol(p.veteliaj);
+		sor.eladasiaj=szokozol(p.eladasiaj);
+//		sor.atlagar=szokozol(p.atlagar);
+		sor.valtozas=szokozol(p.valtozas);
+		sor.valtszaz=szokozol(p.valtszaz);
+		sor.vetelidbszam=szokozol(p.vetelidbszam);
+		sor.eladasidbszam=szokozol(p.eladasidbszam);
+		if (paros) {sor.paros="1";}
+		else {sor.paros="0";}
+		add(sor);
+		
+}
+
+function tolt(csakfav: Bool, csakakt: Bool) {
+	var adatok = ecohu.rv();
+	var paros = false;
 	RVd.all().destroyAll();
-	var sor=RVd(ticker="alma");
 	var tickersor = Tickerek(tickerid=0);
-	var aktiv = Beall.all().one().csaktiv;
-//	var date = now();
-	foreach(papir in adatok) {	
+	
+	
+	
+	 foreach(papir in adatok) {	
+// ha nem volt benne a ticker táblában, akkor berakjuk 	
 		if( Tickerek.findBy("ticker", papir.ticker) == null) {
 			tickersor.tickerid = papir.stockid;
 			tickersor.ticker = papir.ticker;
 			tickersor.fav = false;
+			tickersor.akt = (papir.ido!="00:00:00");
 			add(tickersor);
 			tickersor = Tickerek(tickerid=0);
 		}	
-//		sor.tstamp=date;
-		sor.ido=papir.ido;
-		sor.stockid=papir.stockid;
-		sor.ticker=papir.ticker;
-		sor.utolso=szokozol(papir.utolso);
-		sor.min=szokozol(papir.min);
-		sor.max=szokozol(papir.max);
-		sor.nyito=szokozol(papir.nyito);
-		sor.elozozaro=szokozol(papir.elozozaro);
-		sor.utolsomenny=szokozol(papir.utolsomenny);
-		sor.napiosszes=szokozol(papir.napiosszes);
-		sor.veteliaj=szokozol(papir.veteliaj);
-		sor.eladasiaj=szokozol(papir.eladasiaj);
-		sor.atlagar=szokozol(papir.atlagar);
-		sor.valtozas=szokozol(papir.valtozas);
-		sor.valtszaz=szokozol(papir.valtszaz);
-		sor.vetelidbszam=szokozol(papir.vetelidbszam);
-		sor.eladasidbszam=szokozol(papir.eladasidbszam);
-		sor.fave=favorite(papir.ticker);
-		if(!aktiv){	
-			add(sor);
-		}
-		else {
-			if(papir.ido!="00:00:00") {
-				add(sor);
-			} 
-		}		
-		sor=RVd(ticker ="korte");
-	}
-	return Beall.all().one().gen_ido	;
-}
-
-function tickertolt() {
-	var adatok=ecohu.rv();
-//	Tickerek.all().destroyAll();
-	var sor = Tickerek(tickerid=0);
-	foreach(papir in adatok) {
-		if( Tickerek.findBy("ticker", papir.ticker) == null) {
-			sor.tickerid = papir.stockid;
-			sor.ticker = papir.ticker;
-			add(sor);
-			sor = Tickerek(tickerid=0);
-		}	
+//ha kell, betoljuk a db a részvény adatokat		
+		var f = isfav(papir.ticker);
+		var a = isakt(papir.ticker);
+		if(a && csakakt && f && csakfav) {tol(papir, paros); paros=!paros; }
+		if(a && csakakt && f && (!csakfav)) {tol(papir, paros); paros=!paros; }
+		if(a && csakakt && (!f) && (!csakfav)) {tol(papir, paros); paros=!paros; }
+		if(a && (!csakakt) && f && csakfav) {tol(papir, paros); paros=!paros; }
+		if(a && (!csakakt) && f && (!csakfav)) {tol(papir, paros); paros=!paros; }
+		if(a && (!csakakt) && (!f) && (!csakfav)) {tol(papir, paros); paros=!paros;}
+		if((!a) && (!csakakt) && f && csakfav) {tol(papir, paros); paros=!paros;}
+		if((!a) && (!csakakt) && f && (!csakfav)) {tol(papir, paros); paros=!paros; }
+		if((!a) && (!csakakt) && (!f) && (!csakfav)) {tol(papir, paros); paros=!paros; }
 	}
 }
 
-//tolt(true);
-
-
+Beall_init();
 
 
 
