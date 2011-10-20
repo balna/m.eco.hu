@@ -9,6 +9,7 @@ var chartbase = "http://charts.eco.hu/tozsde/";
 	
 screen root() {
 		var a= true
+		var s= "<div style=\"text-align:center;\"><iframe id=\"ajframe\" width=\"100%\" height=\"1\" src=\"http://services.eco.hu/bb/meco/mobilecozona.html\" frameborder=\"0\" scrolling=\"no\"></iframe></div>"
 		var f= true
 		script {Beall_init();}
 	//block() {
@@ -20,9 +21,12 @@ screen root() {
 		item(Fooldal_Item_Style, onclick={ Reszvenylista("Kedvencek", true, Beall.all().one().csaktiv );}) { "Kedvenceim árfolyamai" }
 //		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().filter("fave", "=", true).order("ticker", true), "Kedvenceim"); }) { "Kedvenceim árfolyamai" }
 		item(Fooldal_Item_Style, onclick={ Beallit(); }) { "Beállítások" }
-		checkBox(a, label="csaktiv")
-		checkBox(f, label="csakfav")
-		button("tolt1", onclick={tolt(f, a);})
+		nl()
+		html("<div style=\"font-size:8px;\"> Hirdetés:</div>")	
+		html(s)
+//		checkBox(a, label="csaktiv")
+//		checkBox(f, label="csakfav")
+//		button("tolt1", onclick={tolt(f, a);})
 	//}
  
 } 
@@ -40,7 +44,7 @@ screen Reszvenylista(mit: String, csakfav: Bool, csakakt: Bool) {
 			button(beall.gen_ido, onclick={ gentime = null; gentime = tolt(csakfav, csakakt); })
 		}	
 	} 
-	block(onswipe = {alert("Simi :-)");})	{
+	block()	{
 		list(a in adatok ) {
 			when(a.paros==0) {
     			item(List_Item_Style_0, onclick={ Egyreszveny(a);}) { 
@@ -100,7 +104,7 @@ screen Egyreszveny(a: RVd) {
     }
     item(List_Item_Style_0) {
     	label("Forgalom (M):", ER_Header_Style)
- //   	label( Math.round(parseNum(a.atlagar)*parseNum(a.napiosszes)/1000000), ER_Item_Style)
+    	label( a.forgalom, ER_Item_Style)
     }
     item(List_Item_Style_1) {
     	var s = a.veteliaj.toString() + " x " + a.vetelidbszam.toString()

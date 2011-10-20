@@ -80,14 +80,14 @@ function ReszvenyMapper(json:JSON) : [ecod] {
 
 service ecohu {
   resource rv() : [ecod] {
-//	uri = "http://services.eco.hu/bb/bb_bet_rvprompt.php"	
-	uri = "http://services.eco.hu/bb/meco/staticjson.json"
+	uri = "http://services.eco.hu/bb/bb_bet_rvprompt.php"	
+//	uri = "http://services.eco.hu/bb/meco/staticjson.json"
     encoding = "json"
 	mapper = ReszvenyMapper
   }
  
   resource index() : [ecod] {
-	uri = "http://services.eco.hu/bb/bb_bet_indexprompt.php"	
+//	uri = "http://services.eco.hu/bb/bb_bet_indexprompt.php"	
 //	uri = "http://services.eco.hu/bb/meco/staticjson.json"
     encoding = "json"
 	mapper = ReszvenyMapper
