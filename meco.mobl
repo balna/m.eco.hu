@@ -6,7 +6,7 @@ import meco_Styles
  
 var paros = true;
 var chartbase = "http://charts.eco.hu/tozsde/";
-
+	
 screen root() {
 		var a= true
 		var f= true
@@ -15,26 +15,32 @@ screen root() {
 		block(logo_Style) {
 			image("logo.gif")
 		}
-		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().order("ticker", true), "Részvények"); }) { "Részvény árfolyamok" }
-		item(Fooldal_Item_Style, onclick={ Reszvenylista("M", false, true );}) { "Majmok" }
-		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().filter("fave", "=", true).order("ticker", true), "Kedvenceim"); }) { "Kedvenceim árfolyamai" }
+//		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().order("ticker", true), "Részvények"); }) { "Részvény árfolyamok" }
+		item(Fooldal_Item_Style, onclick={ Reszvenylista("Részvények", false, Beall.all().one().csaktiv );}) { "Részvény árfolyamok" }
+		item(Fooldal_Item_Style, onclick={ Reszvenylista("Kedvencek", true, Beall.all().one().csaktiv );}) { "Kedvenceim árfolyamai" }
+//		item(Fooldal_Item_Style, onclick={ RV_lista(RVd.all().filter("fave", "=", true).order("ticker", true), "Kedvenceim"); }) { "Kedvenceim árfolyamai" }
 		item(Fooldal_Item_Style, onclick={ Beallit(); }) { "Beállítások" }
 		checkBox(a, label="csaktiv")
 		checkBox(f, label="csakfav")
 		button("tolt1", onclick={tolt(f, a);})
 	//}
-	
-}
-
+ 
+} 
+ 
 screen Reszvenylista(mit: String, csakfav: Bool, csakakt: Bool) {
+//	script {startLoading();}
 	var adatok = RVd.all()
 	var beall = Beall.all().one()
 	var gentime= async(tolt(csakfav, csakakt))
-	header("") {
-		backButton()
-		button(beall.gen_ido, onclick={tolt(csakfav, csakakt);})
+//	whenLoaded(gentime, loadingMessage="", style = tolt_Style) {}
+	header(mit) {
+		whenLoaded(gentime, loadingMessage="", style = tolt_Style) {
+			backButton("Vissza")
+//			button("Vissza", onclick={screen return;} )
+			button(beall.gen_ido, onclick={ gentime = null; gentime = tolt(csakfav, csakakt); })
+		}	
 	} 
-	block()	{
+	block(onswipe = {alert("Simi :-)");})	{
 		list(a in adatok ) {
 			when(a.paros==0) {
     			item(List_Item_Style_0, onclick={ Egyreszveny(a);}) { 
@@ -56,56 +62,6 @@ screen Reszvenylista(mit: String, csakfav: Bool, csakakt: Bool) {
 	}
 }
 
-screen RV_lista1(mindet: Bool, honnan: String) {
-	var i = false
-	var j = 0
-	var adatok = RVd.all()
-	
-	header("") {
-		item (){ 
-    	backButton()
-    	button("tolt1", onclick={tolt(false, false);})
-    	}
-    }
-    group() {
- //   when (j==0) {tolt(Beall.all().one().csaktiv)}
-	list(a in adatok ) {
-    	script { j = j + 1;}
-    	item(csikoz(a.paros), onclick={ Egyreszveny(a);}) { 
-    		label(a.ticker,szinez_ticker(a.valtozas))
-    		label(a.utolso, szinez_ar(a.valtozas))
-    		label(a.valtozas, szinez_valt(a.valtozas))
-    		image(chartbase + a.stockid + "_t.png", valign="middle")
-      	}
-	}
-	when (j==0)  {label("hmmm vagy nem állítottál be kedvenceket a beállításokban vagy hengerfejes lett az motor, refresh?") label(j)}
-	}
-}
-
-screen RV_lista(adatok: RVd, honnan: String) {
-	var i = false
-	var j = 0
-	header(honnan) {
-		//label(Beall.all().one().gen_ido)
-    	backButton()
-//    	sideButton(tolt(), onclick={ tolt();  })
-    }
-    group() {
- //   when (j==0) {tolt(Beall.all().one().csaktiv)}
-	list(a in adatok ) {
-    	 script { j = j + 1;}
-    		item(csikoz("0"), onclick={ Egyreszveny(a);}) { 
-    			label(a.ticker,szinez_ticker(a.valtozas))
-    			label(a.utolso, szinez_ar(a.valtozas))
-    			label(a.valtozas, szinez_valt(a.valtozas))
-    			image(chartbase + a.stockid + "_t.png", valign="middle")
-      		}
-		
-	}
-	
-	when (j==0)  {label("hmmm vagy nem állítottál be kedvenceket a beállításokban vagy hengerfejes lett az motor, refresh?") label(j)}
-	}
-}			
 
 
 screen Egyreszveny(a: RVd) {

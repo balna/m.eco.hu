@@ -3,7 +3,7 @@ module meco_Res
 
 type ecod {
 		ido: String
-		stockid: Num
+		stockid: String
 		ticker: String
 		utolso: String
 		min: String
@@ -27,7 +27,7 @@ type ecod {
 entity RVd {
 		ido: String
 		paros: String
-		stockid: Num
+		stockid: String
 		ticker: String
 		utolso: String
 		min: String
@@ -53,7 +53,7 @@ entity Beall  {
 }
 
 entity Tickerek  {
-	tickerid: Num
+	tickerid: String
 	ticker: String
 	fav: Bool
 	akt: Bool
@@ -81,7 +81,14 @@ function ReszvenyMapper(json:JSON) : [ecod] {
 service ecohu {
   resource rv() : [ecod] {
 //	uri = "http://services.eco.hu/bb/bb_bet_rvprompt.php"	
-  uri = "http://services.eco.hu/bb/meco/staticjson.json"
+	uri = "http://services.eco.hu/bb/meco/staticjson.json"
+    encoding = "json"
+	mapper = ReszvenyMapper
+  }
+ 
+  resource index() : [ecod] {
+	uri = "http://services.eco.hu/bb/bb_bet_indexprompt.php"	
+//	uri = "http://services.eco.hu/bb/meco/staticjson.json"
     encoding = "json"
 	mapper = ReszvenyMapper
   }
@@ -142,7 +149,7 @@ function isakt(t: String): Bool {
 function tol(p: ecod, paros: Bool) {
 		var sor=RVd(ticker="alma");
 		sor.ido=p.ido;
-		sor.stockid=p.stockid;
+		sor.stockid=p.stockid.toString();
 		sor.ticker=p.ticker;
 		sor.utolso=szokozol(p.utolso);
 		sor.min=szokozol(p.min);
@@ -166,6 +173,7 @@ function tol(p: ecod, paros: Bool) {
 }
 
 function tolt(csakfav: Bool, csakakt: Bool): String {
+//	var indexek = ecohu.index();
 	var adatok = ecohu.rv();
 	var paros = false;
 	RVd.all().destroyAll();
@@ -177,7 +185,7 @@ function tolt(csakfav: Bool, csakakt: Bool): String {
 // ha nem volt benne a ticker táblában, akkor berakjuk
 		var t = Tickerek.findBy("ticker", papir.ticker); 	
 		if( t == null) {
-			tickersor.tickerid = papir.stockid;
+			tickersor.tickerid = papir.stockid.toString();
 			tickersor.ticker = papir.ticker;
 			tickersor.fav = false;
 			tickersor.akt = (papir.ido!="00:00:00");
@@ -200,6 +208,7 @@ function tolt(csakfav: Bool, csakakt: Bool): String {
 		if((!a) && (!csakakt) && (!f) && (!csakfav)) {tol(papir, paros); paros=!paros; }
 	}
 	return Beall.all().one().gen_ido;
+//	return null;
 }
 
 
