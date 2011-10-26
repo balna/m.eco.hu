@@ -3,6 +3,4 @@ configuration
 
 style $baseColor = rgb(112, 153, 226)
  
-debug
-
-title "meco"
+title "m.eco.hu"
